@@ -32,7 +32,6 @@ public class Client {
         if (out != null) out.println(msg);
         System.out.println("Enviat al servidor: " + msg);
     }
-    // connecta, envia prova1, envia prova2, envia adeu!, espera pulsació d'ENTER i tanca
     public static void main(String[] args) {
         Client cli = new Client();
         cli.conecta();
