@@ -13,8 +13,8 @@ public class FilServidorXat extends Thread {
         try {
             String msg;
             while ((msg = (String) in.readObject()) != null) {
+                System.out.println("Missatge (\'sortir\') per tancar: Rebut: " + msg);
                 if (msg.equalsIgnoreCase(ServidorXat.MSG_SORTIR)) break;
-                System.out.println(msg);
             }
             System.out.println("Fil de xat finalitzat.");
         } catch (IOException ex) {

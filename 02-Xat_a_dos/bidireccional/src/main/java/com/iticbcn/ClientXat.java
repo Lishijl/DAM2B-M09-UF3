@@ -14,14 +14,14 @@ public class ClientXat {
     private ObjectInputStream in;
     public void connecta() throws IOException {
         socket = new Socket(HOST, PORT);
-        System.out.println("Client connectat a: " + HOST + ":" + PORT);
+        System.out.println("Client connectat a " + HOST + ":" + PORT);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         System.out.println("Flux d'entrada i sortida creat.");          // 2 msg previs
     }
     public void enviarMissatge(String msg) throws IOException { 
         System.out.println("Enviant missatge: " + msg);
-        out.writeObject(out); 
+        out.writeObject(msg); 
     }
     public void tancarClient() throws IOException {
         System.out.println("Tancant client...");
@@ -40,15 +40,19 @@ public class ClientXat {
             String msg;
             while(!(msg = sc.nextLine()).equalsIgnoreCase(ServidorXat.MSG_SORTIR)) {
                 client.enviarMissatge(msg);
+                System.out.print("Missatge ('sortir' per tancar): ");
             }
             client.enviarMissatge(ServidorXat.MSG_SORTIR);          // 5 msg Finals
             sc.close();
+            cliXatTh.join();
             client.tancarClient();
             System.out.println("Client tancat.");
-            if (client.socket == null) {
+            if (client.socket.isClosed()) {
                 System.out.println("El servidor ha tancat la connexió.");
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         

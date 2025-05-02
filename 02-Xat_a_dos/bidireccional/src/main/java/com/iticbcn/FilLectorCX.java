@@ -11,16 +11,11 @@ public class FilLectorCX extends Thread {
     @Override
     public void run() {
         try {
+            System.out.println("Missatge ('sortir' per tancar): Fil de lectura iniciat");
             String msg;
-            int inici = 0;
             while ((msg = (String) in.readObject()) != null) {
-                if (inici == 0) {
-                    msg = "Fil de lectura iniciat";
-                    inici++;
-                }
-                msg = "Rebut" + msg;
-                System.out.println("Missatge ('sortir' per tancar): " + msg);
                 if (msg.equalsIgnoreCase(ServidorXat.MSG_SORTIR)) break;
+                System.out.println("Rebut: " + msg);
             }
         } catch (IOException ex) {
             ex.printStackTrace();

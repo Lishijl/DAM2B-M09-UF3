@@ -46,7 +46,7 @@ public class ServidorXat {
             Thread servXatTh = new FilServidorXat(servidor.in);
             System.out.println("Fil de xat creat.");
             servXatTh.start();
-            System.out.println("Fil de " + cliNom + "iniciat");     // 5 msg previs
+            System.out.println("Fil de " + cliNom + " iniciat");     // 5 msg previs
             try (BufferedReader consola = new BufferedReader(new InputStreamReader(System.in))) {
                 String msg;
                 while(!(msg = consola.readLine()).equalsIgnoreCase(MSG_SORTIR)) {
