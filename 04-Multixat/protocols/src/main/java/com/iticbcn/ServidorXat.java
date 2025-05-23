@@ -21,24 +21,30 @@ public class ServidorXat {
     // port i host anteriors
     public void servidorAEscoltar() throws IOException {
         srvSocket = new ServerSocket(PORT);
-        System.out.println("Servidor iniciat a " + HOST + ":" + PORT);
+        System.out.println("\nServidor iniciat a " + HOST + ":" + PORT);
     }
     // atura server socket
     public void pararServidor() throws IOException {
-        if (srvSocket != null && !srvSocket.isClosed()) srvSocket.close();
+        if (srvSocket != null && !srvSocket.isClosed()) {
+            srvSocket.close();
+        }
     }
     // envia msg de grup amb el contingut msg_sortir, buida hashtable, surt del programa
     public void finalitzarXat() throws IOException {
-        enviarMissatgeGrup(Missatge.getMissatgeSortirTots(MSG_SORTIR));
+        for (GestorClients gc: hashtable.values()) {
+            gc.enviarMissatge(gc.getNom(), Missatge.getMissatgeSortirTots(MSG_SORTIR));
+        }
         hashtable.clear();
         System.out.println("Tancant tots els clients.");
+        System.out.println("DEBUG: multicast sortir");
+        sortir = true;
         pararServidor();
     }
     // afegeix client al hashtable i envia msg de grup amb el nom dient que entra.
     public void afegirClient(GestorClients gsClients) throws IOException {
         hashtable.put(gsClients.getNom(), gsClients);
         System.out.println(gsClients.getNom() + " connectat.");
-        enviarMissatgeGrup(Missatge.getMissatgeGrup("Entra: " + gsClients.getNom()));
+        System.out.println("DEBUG: multicast Entra: " + gsClients.getNom());
     }
     // si es valida trobant el nom en el hshtb, l'elimina de la taula
     public void eliminarClient(String nomCli) {
@@ -49,7 +55,7 @@ public class ServidorXat {
     // l'envia a tots els clients el msg
     public void enviarMissatgeGrup(String msg) throws IOException {
         for (GestorClients gc: hashtable.values()) {
-            gc.enviarMissatge(gc.getNom(), msg);
+            gc.enviarMissatge(gc.getNom(), Missatge.getMissatgeGrup(msg));
         }
     }
     //  params, nom origen i desti
@@ -57,7 +63,7 @@ public class ServidorXat {
         GestorClients cli = hashtable.get(nomDestinatari);
         if (cli != null) {
             System.out.println("Missatge personal per (" + nomDestinatari + ") de (" + nomRemitent + "): " + msg);
-            cli.enviarMissatge(nomRemitent, msg);
+            cli.enviarMissatge(nomRemitent, Missatge.getMissatgePersonal(nomRemitent, msg));
         } else {
             System.out.println("No s'ha trobat destinatari.");
         }
@@ -65,7 +71,7 @@ public class ServidorXat {
     public static void main(String[] args) throws IOException {
         ServidorXat servXat = new ServidorXat();
         servXat.servidorAEscoltar();
-        while(true) {
+        while(!servXat.sortir) {
             servXat.cliSocket = servXat.srvSocket.accept();
             System.out.println("Client connectat: " + servXat.cliSocket.getInetAddress());
             GestorClients gestorClients = new GestorClients(servXat.cliSocket, servXat);

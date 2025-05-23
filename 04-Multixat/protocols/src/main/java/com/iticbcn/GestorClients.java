@@ -27,17 +27,28 @@ public class GestorClients extends Thread {
             in = new ObjectInputStream(client.getInputStream());
             while (!sortir) {
                 String msg = (String) in.readObject();
-                processaMissatge(msg);
+                if (msg != null) {
+                    processaMissatge(msg);
+                }
             }
             client.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (out != null) out.close();
+                if (client != null) client.close();
+                srvXat.eliminarClient(nom);
+            } catch (IOException e) {
+                System.out.println("Error tancant connexió per client " + nom);
+            }
         }
     }
     public void enviarMissatge(String nomRemitent, String msg) throws IOException {
-        out.writeObject(Missatge.getMissatgePersonal(nom, "(" + nomRemitent + ") :" + msg));
+        out.writeObject(msg);
         out.flush();
     }
     public void processaMissatge(String txt) throws IOException {
